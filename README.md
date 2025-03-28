@@ -82,7 +82,7 @@ This option is for setting up the application locally without Docker.
 
 4. Run the application container:
    ```bash
-   docker run -p 8000:8000 -e POSTGRES_HOST=host.docker.internal -e POSTGRES_DB=entech_db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_PORT=5432 entech-report-generator
+   docker run -p 8000:8000 -e POSTGRES_HOST=127.0.0.1 -e POSTGRES_DB=entech_db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_PORT=5432 entech-report-generator
    ```
 
 5. Access the application at http://localhost:8000
@@ -281,4 +281,78 @@ When using the web interface:
 3. Click "Generate Report" to create a report with your images
 
 The application will automatically find the referenced images, resize them as needed, and include them in the generated PDF report.
+
+## Troubleshooting
+
+### Database Connection Issues
+
+If you encounter database connection errors like the following:
+
+```
+psycopg2.OperationalError: connection to server at "127.0.0.1", port 5432 failed: Connection refused
+        Is the server running on that host and accepting TCP/IP connections?
+```
+
+This typically happens due to incorrect database connection settings. Here are some solutions:
+
+#### When Using Docker Standalone
+
+When running the application container separately from the database container, you need to ensure proper network connectivity:
+
+1. **Network Configuration**: Make sure both containers are on the same Docker network:
+   ```bash
+   # Create a network
+   docker network create entech-network
+   
+   # Run PostgreSQL with the network
+   docker run --name postgres-db --network entech-network -e POSTGRES_DB=entech_db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:14
+   
+   # Run the application with the network and correct host
+   docker run --network entech-network -p 8000:8000 -e POSTGRES_HOST=postgres-db -e POSTGRES_DB=entech_db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_PORT=5432 entech-report-generator
+   ```
+
+2. **Host Configuration**: When running containers separately, use the container name as the host, not 127.0.0.1:
+   - Incorrect: `-e POSTGRES_HOST=127.0.0.1`
+   - Correct: `-e POSTGRES_HOST=postgres-db`
+
+#### When Using Docker Compose
+
+With Docker Compose, the service name defined in `docker-compose.yml` should be used as the host:
+
+1. **Check Environment Variables**: In the `docker-compose.yml` file, ensure the web service has:
+   ```yaml
+   environment:
+     - POSTGRES_HOST=db  # 'db' is the service name of the database
+   ```
+
+2. **Verify Dependencies**: Make sure the web service depends on the database service:
+   ```yaml
+   depends_on:
+     db:
+       condition: service_healthy
+   ```
+
+#### When Running Locally
+
+If running the application outside of Docker:
+
+1. **Ensure PostgreSQL is Running**: Check if PostgreSQL is running on your machine:
+   ```bash
+   # Windows
+   sc query postgresql
+   
+   # Or check if port 5432 is listening
+   netstat -an | findstr 5432
+   ```
+
+2. **Correct Environment Variables**: Set the correct environment variables:
+   ```bash
+   set POSTGRES_HOST=localhost
+   # or
+   set POSTGRES_HOST=127.0.0.1
+   ```
+
+3. **PostgreSQL Configuration**: Ensure PostgreSQL is configured to accept connections:
+   - Check `pg_hba.conf` for proper client authentication settings
+   - Verify PostgreSQL is listening on the correct interfaces in `postgresql.conf`
 
