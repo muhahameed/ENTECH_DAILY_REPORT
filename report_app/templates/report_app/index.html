@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ENTECH Report Generator</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #1e3a8a;
+      --secondary-color: #34495e;
+      --accent-color: #0ea5e9;
+      --text-color: #ecf0f1;
+      --background-color: #0f172a;
+      --card-background: #2d2d2d;
+      --border-color: #444;
+      --success-color: #2ecc71;
+      --error-color: #e74c3c;
+      --hover-color: #0284c7;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--background-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      flex: 1;
+    }
+    
+    header {
+      background-color: var(--primary-color);
+      padding: 20px 0;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .logo-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .logo {
+      max-width: 220px;
+      height: auto;
+    }
+    
+    .card {
+      background-color: var(--card-background);
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      padding: 25px;
+      margin-top: 30px;
+      border: 1px solid var(--border-color);
+    }
+    
+    h1 {
+      color: var(--accent-color);
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 28px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--accent-color);
+    }
+    
+    textarea {
+      width: 100%;
+      min-height: 300px;
+      padding: 12px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+      background-color: var(--secondary-color);
+      color: var(--text-color);
+      font-family: monospace;
+      resize: vertical;
+      box-sizing: border-box;
+    }
+    
+    .btn {
+      display: inline-block;
+      background: linear-gradient(to right, var(--accent-color), var(--primary-color));
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      text-align: center;
+      transition: all 0.3s;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+      margin: 10px 5px;
+    }
+    
+    .btn:hover {
+      background: linear-gradient(to right, var(--hover-color), #1e40af);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    }
+    
+    .btn i {
+      margin-right: 8px;
+    }
+    
+    .btn-container {
+      text-align: center;
+      margin-top: 20px;
+    }
+    
+    .sample-json {
+      margin-top: 30px;
+      font-size: 14px;
+    }
+    
+    .sample-json h3 {
+      color: var(--accent-color);
+      margin-bottom: 10px;
+    }
+    
+    .sample-json pre {
+      background-color: var(--secondary-color);
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+    }
+    
+    footer {
+      text-align: center;
+      padding: 20px;
+      margin-top: 40px;
+      background-color: var(--primary-color);
+      color: var(--text-color);
+      font-size: 14px;
+    }
+    
+    .error {
+      color: var(--error-color);
+      margin-top: 5px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo-container">
+      <img src="{% static 'report_app/images/EnTechLogo2025-01.png' %}" alt="ENTECH Logo" class="logo">
+    </div>
+  </header>
+  
+  <div class="container">
+    <div class="card">
+      <h1>Daily Inspection Report Generator</h1>
+      
+      <form action="{% url 'generate_report_json' %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="json_data">Enter Report JSON Data:</label>
+          <textarea id="json_data" name="json_data" placeholder="Paste your JSON data here..." required>{
+  "date": "2024-10-29",
+  "daily_report_no": "123",
+  "page": "3 of 4",
+  "pictures": [
+    {
+      "file_name": "Picture1.jpg",
+      "location": "Staten Island, New York",
+      "description": "Before the painting"
+    },
+    {
+      "file_name": "Picture2.jpg",
+      "location": "Staten Island, New York",
+      "description": "After the painting"
+    }
+  ]
+}</textarea>
+        </div>
+        
+        <div class="btn-container">
+          <button type="submit" class="btn">
+            <i class="fas fa-file-pdf"></i> Generate Report
+          </button>
+        </div>
+      </form>
+      
+      <!-- Sample JSON Format section replaced with pre-filled textarea above -->
+    </div>
+  </div>
+  
+  <footer>
+    &copy; {% now "Y" %} ENTECH Engineering, P.C. All rights reserved.
+  </footer>
+</body>
+</html>

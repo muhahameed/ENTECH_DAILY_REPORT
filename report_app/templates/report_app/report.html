@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Daily Inspection Report</title>
+  <style>
+    :root {
+      --primary-color: #1e3a8a;
+      --secondary-color: #475569;
+      --accent-color: #0ea5e9;
+      --text-color: #f8fafc;
+      --background-color: #0f172a;
+      --card-background: #ffffff;
+      --border-color: #e2e8f0;
+      --header-bg: #f1f5f9;
+      --info-bg: #f8fafc;
+      --shadow-color: rgba(15, 23, 42, 0.15);
+      --hover-color: #0284c7;
+    }
+
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--background-color);
+      color: #333;
+    }
+
+    .report-container {
+      width: 794px;
+      margin: 30px auto;
+      padding: 25px;
+      background-color: var(--card-background);
+      box-shadow: 0 8px 20px var(--shadow-color);
+      border-radius: 8px;
+    }
+
+    /* Replace flexbox with table layout for better PDF compatibility */
+    .header {
+      width: 100%;
+      margin-bottom: 25px;
+      border-bottom: 2px solid var(--primary-color);
+      padding-bottom: 15px;
+      overflow: hidden;
+      background-color: var(--header-bg);
+      border-radius: 6px 6px 0 0;
+    }
+    
+    .logo-container {
+      float: left;
+      width: 40%;
+    }
+
+    .logo {
+      width: 220px;
+      height: auto;
+    }
+
+    .report-title-section {
+      float: right;
+      width: 60%;
+      text-align: right;
+    }
+
+    .report-title {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--primary-color);
+      text-transform: uppercase;
+      margin: 0;
+      letter-spacing: 0.5px;
+    }
+
+    .report-subtitle {
+      font-size: 14px;
+      color: var(--secondary-color);
+      margin-top: 5px;
+    }
+
+    .info-section {
+      background: linear-gradient(to right, var(--info-bg), #f1f5f9);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 18px;
+      margin-bottom: 25px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+    }
+
+    /* Replace grid with table for better PDF compatibility */
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .info-table td {
+      width: 33.33%;
+      padding: 5px 10px;
+      border-right: 1px solid #dee2e6;
+    }
+
+    .info-table td:last-child {
+      border-right: none;
+    }
+
+    .info-label {
+      font-weight: bold;
+      color: var(--primary-color);
+      font-size: 14px;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    .info-value {
+      font-size: 16px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      color: var(--primary-color);
+      margin-bottom: 15px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-color);
+      position: relative;
+    }
+    
+    .section-title:after {
+      content: "";
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 100px;
+      height: 3px;
+      background: linear-gradient(to right, var(--accent-color), var(--primary-color));
+      border-radius: 3px;
+    }
+
+    /* Replace flexbox with block elements */
+    .pictures-grid {
+      margin-bottom: 30px;
+    }
+
+    .picture-box {
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: var(--card-background);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
+      page-break-inside: avoid;
+      break-inside: avoid;
+      margin-bottom: 35px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .picture-box:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .picture-box img {
+      width: 100%;
+      height: 500px;
+      object-fit: contain;
+      display: block;
+      background-color: #f8f9fa;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .picture-info {
+      padding: 18px;
+      background: linear-gradient(to bottom, var(--card-background), var(--info-bg));
+    }
+
+    /* Replace flexbox with table for info rows */
+    .picture-info-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .picture-info-table tr {
+      border-bottom: 1px solid #f2f2f2;
+    }
+    
+    .picture-info-table tr:last-child {
+      border-bottom: none;
+    }
+    
+    .picture-info-table td.label {
+      font-weight: 600;
+      width: 100px;
+      color: var(--primary-color);
+      padding: 6px 0;
+    }
+    
+    .picture-info-table td.value {
+      padding: 5px 0;
+    }
+
+    .footer {
+      margin-top: 35px;
+      padding: 20px;
+      border-top: 1px solid var(--border-color);
+      font-size: 12px;
+      color: var(--secondary-color);
+      text-align: center;
+      background-color: var(--header-bg);
+      border-radius: 0 0 6px 6px;
+      padding: 15px;
+    }
+
+    .download-section {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .download-btn {
+      display: inline-block;
+      padding: 10px 24px;
+      background: linear-gradient(to right, var(--accent-color), var(--primary-color));
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      transition: all 0.3s;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+      margin-top: 10px;
+    }
+
+    .download-btn:hover {
+      background: linear-gradient(to right, var(--hover-color), #1e40af);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    @media print {
+      body {
+        background-color: #fff;
+      }
+      
+      .report-container {
+        width: 100%;
+        box-shadow: none;
+        padding: 0;
+      }
+      
+      .download-section {
+        display: none;
+      }
+      
+      .picture-box {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        margin-bottom: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="report-container">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo-container">
+        <img src="{% static 'report_app/images/EnTechLogo2025-01.png' %}" alt="ENTECH Logo" class="logo">
+      </div>
+      <div class="report-title-section">
+        <h1 class="report-title">Daily Inspection Report</h1>
+        <p class="report-subtitle">Professional Engineering Documentation</p>
+      </div>
+    </div>
+
+    <!-- Report Info -->
+    <div class="info-section">
+      <table class="info-table">
+        <tr>
+          <td>
+            <span class="info-label">Date:</span>
+            <span class="info-value">{{ report.date }}</span>
+          </td>
+          <td>
+            <span class="info-label">Report Number:</span>
+            <span class="info-value">{{ report.daily_report_no }}</span>
+          </td>
+          <td>
+            <span class="info-label">Page:</span>
+            <span class="info-value">{{ report.page }}</span>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Pictures Section -->
+    <h2 class="section-title">Site Documentation</h2>
+    <div class="pictures-grid">
+      {% for picture in pictures %}
+      <div class="picture-box">
+        <img src="{% static 'report_app/images/'|add:picture.file_name %}" alt="{{ picture.description }}">
+        <div class="picture-info">
+          <table class="picture-info-table">
+            <tr>
+              <td class="label">Location:</td>
+              <td class="value">{{ picture.location }}</td>
+            </tr>
+            <tr>
+              <td class="label">Description:</td>
+              <td class="value">{{ picture.description }}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p>This report was generated on {% now "F j, Y" %} at {% now "g:i A" %}</p>
+      <p class="company-info">ENTECH Engineering, P.C. | 17 State St. 36th Floor, New York, NY 10004 | T: (646) 722-0000 | F: (212) 785-8018</p>
+      
+      <!-- Download Button (Moved inside footer) -->
+      <div class="download-section" style="margin-top: 15px;">
+        <a href="{% url 'download_pdf' %}" class="download-btn">Download PDF Report</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Removed the download section that was outside the report container -->
+</body>
+</html>

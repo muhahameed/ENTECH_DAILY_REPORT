@@ -1,0 +1,17 @@
+{
+  "date": "2024-10-29",
+  "daily_report_no": "123",
+  "page": "3 of 4",
+  "pictures": [
+    {
+      "file_name": "Picture1.jpg",
+      "location": "Staten Island, New York",
+      "description": "Before the painting"
+    },
+    {
+      "file_name": "Picture2.jpg",
+      "location": "Staten Island, New York",
+      "description": "After the painting"
+    }
+  ]
+}

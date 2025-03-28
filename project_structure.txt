@@ -1,0 +1,47 @@
+ENTECH Report Generator - Project Structure
+===========================================
+
+Main Components:
+---------------
+
+1. Web Interface (Frontend)
+   - index.html: JSON input form
+   - report.html: Report display template
+
+2. Report Generation (Backend)
+   - views.py: Handles form submission and report generation
+   - utils.py: PDF generation utilities
+
+3. Static Assets
+   - CSS: Styling for the application
+   - Images: Company logo and report images
+
+Key Files:
+---------
+
+1. report_app/templates/report_app/index.html
+   - Main entry point for users
+   - JSON input form
+
+2. report_app/templates/report_app/report.html
+   - Report display template
+   - Responsive design for both screen and print
+
+3. report_app/views.py
+   - generate_report_json: Processes JSON input
+   - download_pdf: Generates downloadable PDF
+
+4. report_app/static/
+   - CSS stylesheets
+   - JavaScript functionality
+   - Images for reports
+
+5. input.json
+   - Sample JSON structure for reports
+
+Data Flow:
+---------
+1. User inputs JSON data on index.html
+2. Data is submitted to the backend
+3. Backend processes data and renders report.html
+4. User can view the report or download as PDF
