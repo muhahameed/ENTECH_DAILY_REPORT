@@ -198,6 +198,7 @@ python manage.py test
   - `management/` - Custom management commands
   - `migrations/` - Database migrations
   - `static/` - Static files specific to the report app
+    - `report_app/images/` - Directory for storing images used in reports
   - `urls.py` - URL routing for the report app
   - `admin.py` - Admin interface configuration
 - `entech_project/` - Django project settings
@@ -212,4 +213,69 @@ python manage.py test
 - `init_db.py` - Database initialization script
 - `manage.py` - Django management script
 - `input.json` - Sample input data
+
+## Using Images in Reports
+
+The ENTECH Daily Inspection Report Generator allows you to include site documentation images in your reports. Follow these instructions to add images to your reports:
+
+### Adding Images to the Application
+
+1. **Image Location**: Place all your images in the `report_app/static/report_app/images/` directory.
+
+2. **Supported Image Formats**: The application supports common image formats including:
+   - JPEG (.jpg, .jpeg)
+   - PNG (.png)
+   - GIF (.gif)
+
+3. **Image Naming**: Use descriptive filenames without spaces (use underscores or hyphens instead). For example:
+   - `site_entrance.jpg`
+   - `before_painting.jpg`
+   - `after_repairs.png`
+
+### Referencing Images in input.json
+
+To include images in your report, reference them in the `input.json` file using the following format:
+
+```json
+{
+  "date": "2024-10-29",
+  "daily_report_no": "123",
+  "page": "3 of 4",
+  "pictures": [
+    {
+      "file_name": "Picture1.jpg",
+      "location": "Staten Island, New York",
+      "description": "Before the painting"
+    },
+    {
+      "file_name": "Picture2.jpg",
+      "location": "Staten Island, New York",
+      "description": "After the painting"
+    }
+  ]
+}
+```
+
+### Important Notes About Images
+
+1. **File Name**: The `file_name` field should contain only the filename (e.g., `Picture1.jpg`), not the full path.
+
+2. **Image Processing**: The application automatically resizes images to fit properly in the PDF report (800x600 pixels).
+
+3. **Image Metadata**: Each image requires:
+   - `file_name`: The name of the image file in the images directory
+   - `location`: Where the picture was taken
+   - `description`: A brief description of what the image shows
+
+4. **Adding Multiple Images**: You can add as many images as needed by adding more objects to the `pictures` array in the JSON.
+
+### Using the Web Interface
+
+When using the web interface:
+
+1. Place your images in the `report_app/static/report_app/images/` directory
+2. Update the JSON in the text area on the home page to reference your images
+3. Click "Generate Report" to create a report with your images
+
+The application will automatically find the referenced images, resize them as needed, and include them in the generated PDF report.
 
