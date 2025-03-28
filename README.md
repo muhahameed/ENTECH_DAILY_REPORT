@@ -77,3 +77,4 @@ python manage.py test
 - `media/` - User-uploaded files
 - `Dockerfile` - Docker configuration
 - `requirements.txt` - Python dependencies
+
