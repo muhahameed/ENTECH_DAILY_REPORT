@@ -28,7 +28,7 @@ Docker provides the easiest setup experience by handling all dependencies automa
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/ENTECH_DAILY_REPORT.git
+   git clone https://github.com/muhahameed/ENTECH_DAILY_REPORT.git
    cd ENTECH_DAILY_REPORT
    ```
 2. Install dependencies:
