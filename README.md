@@ -1,3 +1,6 @@
+![image](https://github.com/user-attachments/assets/c34d243d-a646-40af-a1dc-2a059feb8e7a)
+
+
 # ENTECH Daily Inspection Report Generator
 
 A professional web application for generating daily inspection reports with image documentation for engineering projects. This application uses Django with PostgreSQL for data storage and WeasyPrint for PDF generation.
