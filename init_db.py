@@ -14,7 +14,11 @@ def is_docker_host_available():
         return False
 
 # Set the appropriate host based on environment
-db_host = 'db' if is_docker_host_available() else '127.0.0.1'
+# First check if POSTGRES_HOST is explicitly set in environment variables
+db_host = os.environ.get('POSTGRES_HOST')
+if not db_host:
+    # If not set, auto-detect based on Docker availability
+    db_host = 'db' if is_docker_host_available() else '127.0.0.1'
 print(f"Using database host: {db_host}")
 
 # Wait for PostgreSQL to be ready
@@ -45,8 +49,9 @@ if retry_count == max_retries:
 # Set up Django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'entech_project.settings')
 
-# Update Django's database settings to use the correct host
-os.environ['POSTGRES_HOST'] = db_host
+# Update Django's database settings to use the correct host only if not already set
+if 'POSTGRES_HOST' not in os.environ:
+    os.environ['POSTGRES_HOST'] = db_host
 
 django.setup()
 

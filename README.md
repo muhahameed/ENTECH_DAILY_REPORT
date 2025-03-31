@@ -38,7 +38,30 @@ This option is for setting up the application locally without Docker.
    ```bash
    pip install -r requirements.txt
    ```
-3. Initialize the database:
+3. Set up the database:
+
+   **Option 1A: Using Docker for PostgreSQL (Recommended)**
+   
+   Run PostgreSQL in a Docker container while keeping the application running locally:
+   ```bash
+   # Run PostgreSQL container
+   docker run --name postgres-db -e POSTGRES_DB=entech_db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_HOST=127.0.0.1 -p 5432:5432 -d postgres:14
+   
+   # Set environment variables (defaults shown)
+   # Windows
+   set POSTGRES_DB=entech_db
+   set POSTGRES_USER=postgres
+   set POSTGRES_PASSWORD=postgres
+   set POSTGRES_HOST=127.0.0.1
+   set POSTGRES_PORT=5432
+   
+   # Run the database initialization script
+   python init_db.py
+   ```
+
+   **Option 1B: Using Local PostgreSQL Installation**
+   
+   If you prefer using a local PostgreSQL installation:
    ```bash
    # Ensure PostgreSQL is running locally
    # Set environment variables if needed (defaults shown)
