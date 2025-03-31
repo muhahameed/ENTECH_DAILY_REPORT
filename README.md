@@ -103,12 +103,22 @@ This option is for setting up the application locally without Docker.
    docker build -t entech-report-generator .
    ```
 
-4. Run the application container:
+4. Create a Docker network for container communication:
    ```bash
-   docker run -p 8000:8000 -e POSTGRES_HOST=127.0.0.1 -e POSTGRES_DB=entech_db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_PORT=5432 entech-report-generator
+   docker network create entech-network
    ```
 
-5. Access the application at http://localhost:8000
+5. Connect the PostgreSQL container to the network:
+   ```bash
+   docker network connect entech-network postgres-db
+   ```
+
+6. Run the application container on the same network:
+   ```bash
+   docker run -p 8000:8000 --network entech-network -e POSTGRES_HOST=postgres-db -e POSTGRES_DB=entech_db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_PORT=5432 entech-report-generator
+   ```
+
+7. Access the application at http://localhost:8000
 
 ### Option 3: Using Docker Compose (Recommended for Development)
 

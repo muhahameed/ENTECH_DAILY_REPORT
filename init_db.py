@@ -1,57 +1,40 @@
 import os
 import django
-import time
 import psycopg2
-import socket
 
-# Check if we're running in Docker or locally
-def is_docker_host_available():
-    try:
-        # Try to resolve the Docker host name
-        socket.gethostbyname('db')
-        return True
-    except socket.gaierror:
-        return False
+# Set fixed database connection parameters
+db_name = 'entech_db'
+db_user = 'postgres'
+db_password = 'postgres'
+db_host = '127.0.0.1'  # localhost
+db_port = '5432'
 
-# Set the appropriate host based on environment
-# First check if POSTGRES_HOST is explicitly set in environment variables
-db_host = os.environ.get('POSTGRES_HOST')
-if not db_host:
-    # If not set, auto-detect based on Docker availability
-    db_host = 'db' if is_docker_host_available() else '127.0.0.1'
-print(f"Using database host: {db_host}")
-
-# Wait for PostgreSQL to be ready
-max_retries = 10
-retry_count = 0
-while retry_count < max_retries:
-    try:
-        conn = psycopg2.connect(
-            dbname=os.environ.get('POSTGRES_DB', 'entech_db'),
-            user=os.environ.get('POSTGRES_USER', 'postgres'),
-            password=os.environ.get('POSTGRES_PASSWORD', 'postgres'),
-            host=os.environ.get('POSTGRES_HOST', db_host),
-            port=os.environ.get('POSTGRES_PORT', '5432')
-        )
-        conn.close()
-        print("PostgreSQL is ready!")
-        break
-    except psycopg2.OperationalError as e:
-        retry_count += 1
-        print(f"PostgreSQL not ready yet (attempt {retry_count}/{max_retries}). Error: {e}")
-        print("Waiting 5 seconds before retry...")
-        time.sleep(5)
-
-if retry_count == max_retries:
-    print("Could not connect to PostgreSQL. Exiting.")
+# Simple connection check
+print("Connecting to PostgreSQL database...")
+try:
+    conn = psycopg2.connect(
+        dbname=db_name,
+        user=db_user,
+        password=db_password,
+        host=db_host,
+        port=db_port
+    )
+    conn.close()
+    print("PostgreSQL connection successful!")
+except psycopg2.OperationalError as e:
+    print(f"Could not connect to PostgreSQL. Error: {e}")
+    print("Please make sure PostgreSQL is running on localhost:5432")
     exit(1)
 
 # Set up Django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'entech_project.settings')
 
-# Update Django's database settings to use the correct host only if not already set
-if 'POSTGRES_HOST' not in os.environ:
-    os.environ['POSTGRES_HOST'] = db_host
+# Set database environment variables
+os.environ['POSTGRES_DB'] = db_name
+os.environ['POSTGRES_USER'] = db_user
+os.environ['POSTGRES_PASSWORD'] = db_password
+os.environ['POSTGRES_HOST'] = db_host
+os.environ['POSTGRES_PORT'] = db_port
 
 django.setup()
 
