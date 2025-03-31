@@ -155,8 +155,57 @@ def generate_report_json(request):
             json_data = request.POST.get('json_data')
             data = json.loads(json_data)
             
+            # Validate required fields
+            errors = []
+            required_fields = ['date', 'daily_report_no', 'page', 'pictures']
+            for field in required_fields:
+                if field not in data:
+                    errors.append(f"Missing required field: '{field}'")
+            
+            # Validate date format
+            if 'date' in data:
+                try:
+                    report_date = datetime.strptime(data['date'], '%Y-%m-%d').date()
+                except ValueError:
+                    errors.append("Invalid date format. Use YYYY-MM-DD format.")
+            
+            # Validate pictures array
+            if 'pictures' in data and isinstance(data['pictures'], list):
+                missing_images = []
+                for i, pic in enumerate(data['pictures']):
+                    # Check if picture has required fields
+                    pic_errors = []
+                    for pic_field in ['file_name', 'location', 'description']:
+                        if pic_field not in pic:
+                            pic_errors.append(f"Missing '{pic_field}' in picture #{i+1}")
+                    
+                    # Check if image file exists
+                    if 'file_name' in pic:
+                        file_name = pic['file_name']
+                        if file_name.startswith('/'):
+                            file_name = file_name[1:]
+                        
+                        image_path = os.path.join(settings.BASE_DIR, 'report_app', 'static', 'report_app', 'images', file_name)
+                        if not os.path.exists(image_path):
+                            missing_images.append(f"Image not found: '{file_name}'")
+                    
+                    errors.extend(pic_errors)
+                
+                if missing_images:
+                    errors.append("Missing images:")
+                    errors.extend(missing_images)
+            elif 'pictures' in data and not isinstance(data['pictures'], list):
+                errors.append("'pictures' must be an array")
+            
+            # If there are errors, return to index with error messages
+            if errors:
+                return render(request, 'report_app/index.html', {
+                    'error': 'Validation errors',
+                    'error_details': errors,
+                    'json_data': json_data  # Return the original JSON data
+                })
+            
             # Save report to database
-            report_date = datetime.strptime(data['date'], '%Y-%m-%d').date()
             report = Report(
                 date=report_date,
                 daily_report_no=data['daily_report_no'],
@@ -172,8 +221,21 @@ def generate_report_json(request):
             }
             
             return render(request, 'report_app/report.html', context)
-        except json.JSONDecodeError:
-            # Handle invalid JSON
-            return render(request, 'report_app/index.html', {'error': 'Invalid JSON format'})
+        except json.JSONDecodeError as e:
+            # Handle invalid JSON with more specific error message
+            line_col = f" at line {e.lineno}, column {e.colno}" if hasattr(e, 'lineno') else ""
+            error_msg = f"Invalid JSON format{line_col}: {str(e)}"
+            return render(request, 'report_app/index.html', {
+                'error': 'Invalid JSON format',
+                'error_details': [error_msg],
+                'json_data': json_data if 'json_data' in locals() else ""
+            })
+        except Exception as e:
+            # Handle other unexpected errors
+            return render(request, 'report_app/index.html', {
+                'error': 'An unexpected error occurred',
+                'error_details': [str(e)],
+                'json_data': json_data if 'json_data' in locals() else ""
+            })
     
     return render(request, 'report_app/index.html')
