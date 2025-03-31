@@ -204,6 +204,21 @@
     <div class="card">
       <h1>Daily Inspection Report Generator</h1>
       
+      {% if error %}
+      <div class="error-container">
+        <div class="error-message">
+          <i class="fas fa-exclamation-circle"></i> {{ error }}
+        </div>
+        {% if error_details %}
+        <ul class="error-details">
+          {% for detail in error_details %}
+          <li>{{ detail }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+      {% endif %}
+      
       <form action="{% url 'generate_report_json' %}" method="post">
         {% csrf_token %}
         <div class="form-group">
